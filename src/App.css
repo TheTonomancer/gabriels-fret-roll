@@ -1072,13 +1072,6 @@ input[type="number"] {
   overflow: hidden;
   cursor: pointer;
   touch-action: pan-y;
-  /* Dark rosewood: subtle vertical grain over a muted brown, kept dark so
-     note pills and highlights stay clearly visible on top */
-  background:
-    repeating-linear-gradient(90deg,
-      rgba(0, 0, 0, 0.14) 0px, rgba(0, 0, 0, 0) 3px,
-      rgba(0, 0, 0, 0.07) 6px, rgba(0, 0, 0, 0) 10px),
-    linear-gradient(90deg, #201207, #33200f 25%, #2a190b 55%, #34200e 80%, #1d1006);
 }
 
 .fretboard-string {
@@ -1816,15 +1809,40 @@ input[type="number"] {
 }
 
 .settings-section {
-  margin-bottom: 18px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  background: #202020;
+  border: 1px solid #2d2d2d;
+  border-radius: 8px;
 }
 
 .settings-section h3 {
-  margin: 0 0 10px;
-  font-size: 14px;
-  color: #aaa;
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #ddd;
+  font-weight: 600;
+}
+
+/* Category label above a run of related sections */
+.settings-group {
+  margin: 20px 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #7da7d9;
+}
+
+.settings-group:first-of-type {
+  margin-top: 0;
+}
+
+/* One-line explanation under a section heading */
+.settings-desc {
+  margin: -2px 0 10px;
+  font-size: 12px;
+  color: #8a8a8a;
+  line-height: 1.4;
 }
 
 .settings-row {

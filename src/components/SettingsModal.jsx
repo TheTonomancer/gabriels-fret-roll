@@ -286,8 +286,11 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
         <div className="settings-popup" onClick={e => e.stopPropagation()}>
           <h2 className="settings-title">Settings</h2>
 
+          <div className="settings-group">Playback</div>
+
           <div className="settings-section">
             <h3>Hover Sound Preview</h3>
+            <p className="settings-desc">Play the note under the cursor while hovering these surfaces.</p>
             {[
               { key: 'fretboard', label: 'Fretboard' },
               { key: 'pianoRoll', label: 'Piano Roll Keys' },
@@ -318,8 +321,11 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
             </div>
           </div>
 
+          <div className="settings-group">Display</div>
+
           <div className="settings-section">
             <h3>Tuplet Grid Lines</h3>
+            <p className="settings-desc">Subdivision lines drawn between beats in the timeline grid.</p>
             <div className="settings-row">
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#ccc', cursor: 'pointer' }}>
                 <input
@@ -347,6 +353,7 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
 
           <div className="settings-section">
             <h3>Fretboard Auto-Scroll</h3>
+            <p className="settings-desc">Automatically scroll the fretboard to keep relevant frets in view.</p>
             {[
               { key: 'onHover', label: 'Scroll on note hover' },
               { key: 'onInput', label: 'Scroll on note input' },
@@ -367,6 +374,7 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
 
           <div className="settings-section">
             <h3>Fretboard Hover Pill</h3>
+            <p className="settings-desc">Show a note marker on the fretboard for the position under the cursor.</p>
             {[
               { key: 'fretboard', label: 'Show on fretboard hover' },
               { key: 'pianoRoll', label: 'Show on piano roll hover' },
@@ -386,6 +394,7 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
 
           <div className="settings-section">
             <h3>Timeline</h3>
+            <p className="settings-desc">On-screen controls for the timeline pane.</p>
             <div className="settings-row">
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#ccc', cursor: 'pointer' }}>
                 <input
@@ -398,8 +407,11 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
             </div>
           </div>
 
+          <div className="settings-group">Customization</div>
+
           <div className="settings-section">
             <h3>Keyboard Shortcuts</h3>
+            <p className="settings-desc">View and rebind editor hotkeys and mouse-wheel actions.</p>
             <button className="settings-btn" onClick={() => setPage('hotkeys')}>
               Manage Hotkeys
             </button>
@@ -407,17 +419,17 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
 
           <div className="settings-section">
             <h3>Color Schemes</h3>
+            <p className="settings-desc">Per-note colors for notes on the fretboard and timeline.</p>
             <button className="settings-btn" onClick={() => setPage('schemes')}>
               Manage Color Schemes
             </button>
           </div>
 
-          <div className="settings-section" style={{ display: 'none' }}>
-            <h3>String Colors (moved to Color Schemes)</h3>
-          </div>
+          <div className="settings-group">Project</div>
 
           <div className="settings-section">
             <h3>Autosave</h3>
+            <p className="settings-desc">Keep this session backed up in your browser while you work.</p>
             <div className="settings-row">
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#ccc', cursor: 'pointer' }}>
                 <input
@@ -432,6 +444,7 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
 
           <div className="settings-section">
             <h3>Sessions</h3>
+            <p className="settings-desc">Save sessions in this browser, or move them between devices as files.</p>
             <div className="settings-row-btns">
               <button className="settings-btn" onClick={() => { refreshSessions(); setPage('sessions'); }}>
                 Save / Load Session
@@ -458,6 +471,7 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
 
           <div className="settings-section">
             <h3>Share</h3>
+            <p className="settings-desc">Copy a link that opens the current session for anyone.</p>
             <div className="settings-row-btns">
               <button className="settings-btn" onClick={() => {
                 const url = stateToUrl(getSessionState(appState));

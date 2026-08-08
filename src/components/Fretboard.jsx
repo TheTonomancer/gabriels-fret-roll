@@ -524,6 +524,22 @@ export default function Fretboard({ onNoteClick, onAdjacentClick, onMoveNote, on
           borderBottom: 'none',
         }} />
 
+        {/* Wooden neck - only the fretted strip below the nut, so the pane
+            background around it stays neutral */}
+        <div style={{
+          position: 'absolute',
+          left: `${PADDING_LEFT - 2}%`,
+          right: `${PADDING_RIGHT - 2}%`,
+          top: cellTopPx(1),
+          bottom: 0,
+          background: `
+            repeating-linear-gradient(90deg,
+              rgba(0, 0, 0, 0.14) 0px, rgba(0, 0, 0, 0) 3px,
+              rgba(0, 0, 0, 0.07) 6px, rgba(0, 0, 0, 0) 10px),
+            linear-gradient(90deg, #201207, #33200f 25%, #2a190b 55%, #34200e 80%, #1d1006)`,
+          boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
+        }} />
+
         {/* Nut - bone-colored bar between the open area and fret 1 */}
         <div style={{
           position: 'absolute',
@@ -572,8 +588,9 @@ export default function Fretboard({ onNoteClick, onAdjacentClick, onMoveNote, on
           const thickness = NUM_STRINGS - i;
           const nutTop = cellTopPx(1);
           const isWound = i < 3;
+          // All-steel look: wound bass strings slightly darker, plain trebles brighter
           const stringMetal = isWound
-            ? 'linear-gradient(90deg, #6e5228, #c8a35e 50%, #5f4622)'
+            ? 'linear-gradient(90deg, #6f6f6f, #c4c4c4 50%, #616161)'
             : 'linear-gradient(90deg, #8f8f8f, #ececec 50%, #7f7f7f)';
           return (
             <div key={`string-${i}`}>

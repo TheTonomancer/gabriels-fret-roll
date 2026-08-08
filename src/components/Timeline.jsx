@@ -1144,7 +1144,8 @@ export default function Timeline({
   const highestMidi = pitchRowToMidi(totalRows - 1);
   const whiteKeyHeight = (12 / 7) * rowHeight;
   const WHITE_SEMITONES = [0, 2, 4, 5, 7, 9, 11]; // C D E F G A B
-  const BLACK_KEY_SEMITONES = [1, 3, 6, 8, 10];
+  // [semitone, index of the white-key divider the black key centers on]
+  const BLACK_KEY_SEMITONES = [[1, 1], [3, 2], [6, 4], [8, 5], [10, 6]];
   const pianoKeys = [];
   for (let cMidi = Math.floor(lowestMidi / 12) * 12; cMidi <= highestMidi; cMidi += 12) {
     const cBottomY = (totalRows - (cMidi - lowestMidi)) * rowHeight;
@@ -1160,12 +1161,17 @@ export default function Timeline({
         isBlack: false, top, height: bottom - top, isC: s === 0,
       });
     });
-    BLACK_KEY_SEMITONES.forEach((s) => {
+    BLACK_KEY_SEMITONES.forEach(([s, k]) => {
       const midi = cMidi + s;
       if (midi < lowestMidi || midi > highestMidi) return;
+      // Center the black key on its white-key divider, like a real piano
+      const center = cBottomY - k * whiteKeyHeight;
+      const top = Math.max(0, center - rowHeight / 2);
+      const bottom = Math.min(gridTotalHeight, center + rowHeight / 2);
+      if (bottom <= top) return;
       pianoKeys.push({
         midi, name: midiToNoteName(midi), pitchRow: midiToPitchRow(midi),
-        isBlack: true, top: cBottomY - (s + 1) * rowHeight, height: rowHeight, isC: false,
+        isBlack: true, top, height: bottom - top, isC: false,
       });
     });
   }
