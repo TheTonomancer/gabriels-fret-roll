@@ -96,6 +96,7 @@ export default function SynthEditor({ currentInstrument, onInstrumentChange, onC
   return (
     <div className="settings-overlay" onClick={onClose}>
       <div className="settings-popup synth-editor" onClick={(e) => e.stopPropagation()}>
+        <button className="settings-x" onClick={onClose} title="Close" aria-label="Close">&times;</button>
         <h2 className="settings-title">Synth Editor</h2>
 
         {/* Preset selector */}
@@ -230,7 +231,6 @@ export default function SynthEditor({ currentInstrument, onInstrumentChange, onC
           <button className="settings-btn" onClick={handleSave} disabled={!presetName.trim()}>
             Save{dirty ? ' *' : ''}
           </button>
-          <button className="settings-btn settings-close" onClick={onClose}>Close</button>
         </div>
       </div>
       {confirm && (

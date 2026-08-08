@@ -98,9 +98,9 @@ export default function VoiceLeadingModal({ notes, selectedNotes, onPreview, onA
     return (
       <div className="settings-overlay" onClick={onClose}>
         <div className="settings-popup" onClick={e => e.stopPropagation()}>
+          <button className="settings-x" onClick={onClose} title="Close" aria-label="Close">&times;</button>
           <h2 className="settings-title">Voice Leading</h2>
           <p style={{ color: '#888', fontSize: 13 }}>Select notes spanning at least 2 different beats to analyze voice leading.</p>
-          <button className="settings-btn settings-close" onClick={onClose}>Close</button>
         </div>
       </div>
     );
@@ -109,6 +109,7 @@ export default function VoiceLeadingModal({ notes, selectedNotes, onPreview, onA
   return (
     <div className="settings-overlay" onClick={onClose}>
       <div className="settings-popup vl-modal" onClick={e => e.stopPropagation()}>
+        <button className="settings-x" onClick={onClose} title="Close" aria-label="Close">&times;</button>
         <h2 className="settings-title">Voice Leading</h2>
 
         <div className="vl-chords">

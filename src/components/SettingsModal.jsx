@@ -284,6 +284,7 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
     return (
       <div className="settings-overlay" onClick={onClose}>
         <div className="settings-popup settings-popup-main" onClick={e => e.stopPropagation()}>
+          <button className="settings-x" onClick={onClose} title="Close" aria-label="Close">&times;</button>
           <h2 className="settings-title">Settings</h2>
 
           <div className="settings-columns">
@@ -293,14 +294,14 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
 
           <div className="settings-section">
             <h3>Hover Sound Preview</h3>
-            <p className="settings-desc">Play the note under the cursor while hovering these surfaces.</p>
-            {[
-              { key: 'fretboard', label: 'Fretboard' },
-              { key: 'pianoRoll', label: 'Piano Roll Keys' },
-              { key: 'timelineNotes', label: 'Timeline Notes' },
-            ].map(({ key, label }) => (
-              <div key={key} className="settings-row">
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#ccc', cursor: 'pointer' }}>
+            <p className="settings-desc">Play the note under the cursor on hover.</p>
+            <div className="settings-checks">
+              {[
+                { key: 'fretboard', label: 'Fretboard' },
+                { key: 'pianoRoll', label: 'Piano Roll Keys' },
+                { key: 'timelineNotes', label: 'Timeline Notes' },
+              ].map(({ key, label }) => (
+                <label key={key} className="settings-check">
                   <input
                     type="checkbox"
                     checked={hoverPreview[key] || false}
@@ -308,8 +309,8 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
                   />
                   {label}
                 </label>
-              </div>
-            ))}
+              ))}
+            </div>
             <div className="settings-row" style={{ marginTop: 6 }}>
               <span style={{ fontSize: 13, color: '#ccc', marginRight: 8 }}>Volume</span>
               <input
@@ -328,7 +329,7 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
 
           <div className="settings-section">
             <h3>Tuplet Grid Lines</h3>
-            <p className="settings-desc">Subdivision lines drawn between beats in the timeline grid.</p>
+            <p className="settings-desc">Subdivision lines between beats in the grid.</p>
             <div className="settings-row">
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#ccc', cursor: 'pointer' }}>
                 <input
@@ -355,15 +356,15 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
           </div>
 
           <div className="settings-section">
-            <h3>Fretboard Auto-Scroll</h3>
-            <p className="settings-desc">Automatically scroll the fretboard to keep relevant frets in view.</p>
-            {[
-              { key: 'onHover', label: 'Scroll on note hover' },
-              { key: 'onInput', label: 'Scroll on note input' },
-              { key: 'onPlayback', label: 'Scroll during playback' },
-            ].map(({ key, label }) => (
-              <div key={key} className="settings-row">
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#ccc', cursor: 'pointer' }}>
+            <h3>Fretboard</h3>
+            <span className="settings-sublabel">Auto-scroll to keep frets in view</span>
+            <div className="settings-checks">
+              {[
+                { key: 'onHover', label: 'On note hover' },
+                { key: 'onInput', label: 'On note input' },
+                { key: 'onPlayback', label: 'During playback' },
+              ].map(({ key, label }) => (
+                <label key={key} className="settings-check">
                   <input
                     type="checkbox"
                     checked={autoScroll?.[key] ?? true}
@@ -371,19 +372,15 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
                   />
                   {label}
                 </label>
-              </div>
-            ))}
-          </div>
-
-          <div className="settings-section">
-            <h3>Fretboard Hover Pill</h3>
-            <p className="settings-desc">Show a note marker on the fretboard for the position under the cursor.</p>
-            {[
-              { key: 'fretboard', label: 'Show on fretboard hover' },
-              { key: 'pianoRoll', label: 'Show on piano roll hover' },
-            ].map(({ key, label }) => (
-              <div key={key} className="settings-row">
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#ccc', cursor: 'pointer' }}>
+              ))}
+            </div>
+            <span className="settings-sublabel">Note marker under the cursor</span>
+            <div className="settings-checks">
+              {[
+                { key: 'fretboard', label: 'On fretboard hover' },
+                { key: 'pianoRoll', label: 'On piano roll hover' },
+              ].map(({ key, label }) => (
+                <label key={key} className="settings-check">
                   <input
                     type="checkbox"
                     checked={hoverPill?.[key] ?? true}
@@ -391,8 +388,8 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
                   />
                   {label}
                 </label>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
           <div className="settings-section">
@@ -435,7 +432,7 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
 
           <div className="settings-section">
             <h3>Autosave</h3>
-            <p className="settings-desc">Keep this session backed up in your browser while you work.</p>
+            <p className="settings-desc">Back up this session in your browser while you work.</p>
             <div className="settings-row">
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#ccc', cursor: 'pointer' }}>
                 <input
@@ -450,7 +447,7 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
 
           <div className="settings-section">
             <h3>Sessions</h3>
-            <p className="settings-desc">Save sessions in this browser, or move them between devices as files.</p>
+            <p className="settings-desc">Save in this browser, move between devices as files, or share as a link.</p>
             <div className="settings-row-btns">
               <button className="settings-btn" onClick={() => { refreshSessions(); setPage('sessions'); }}>
                 Save / Load Session
@@ -461,7 +458,7 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
                 await exportToFile(getSessionState(appState), `${appState.projectName || 'guitar-roll'}.json`);
               }}>
                 Export to File
-              </button>    
+              </button>
               <button className="settings-btn" onClick={async () => {
                 try {
                   const data = await importFromFile();
@@ -473,11 +470,6 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
                 Import from File
               </button>
             </div>
-          </div>
-
-          <div className="settings-section">
-            <h3>Share</h3>
-            <p className="settings-desc">Copy a link that opens the current session for anyone.</p>
             <div className="settings-row-btns">
               <button className="settings-btn" onClick={() => {
                 const url = stateToUrl(getSessionState(appState));
@@ -493,8 +485,6 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
 
           </div>
           </div>
-
-          <button className="settings-btn settings-close" onClick={onClose}>Close</button>
         </div>
       </div>
     );
@@ -588,6 +578,8 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
       <>
         <div className="settings-overlay" onClick={onClose}>
           <div className="settings-popup" onClick={e => e.stopPropagation()}>
+            <button className="settings-back-arrow" onClick={() => setPage('main')} title="Back to Settings" aria-label="Back">&larr;</button>
+            <button className="settings-x" onClick={onClose} title="Close" aria-label="Close">&times;</button>
             <h2 className="settings-title">Color Schemes</h2>
 
           <div className="settings-section">
@@ -666,7 +658,6 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
             ))}
           </div>
 
-          <button className="settings-btn settings-back" onClick={() => setPage('main')}>Back</button>
         </div>
         {confirm && (
           <ConfirmDialog message={confirm.message} onConfirm={confirm.onConfirm} onCancel={() => setConfirm(null)} />
@@ -847,6 +838,8 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
     return (
       <div className="settings-overlay" onClick={onClose}>
         <div className="settings-popup" onClick={e => e.stopPropagation()}>
+          <button className="settings-back-arrow" onClick={() => setPage('main')} title="Back to Settings" aria-label="Back">&larr;</button>
+          <button className="settings-x" onClick={onClose} title="Close" aria-label="Close">&times;</button>
           <h2 className="settings-title">Sessions</h2>
 
           <div className="settings-row" style={{ marginBottom: 12 }}>
@@ -894,7 +887,6 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
             ))}
           </div>
 
-          <button className="settings-btn settings-back" onClick={() => setPage('main')}>Back</button>
         </div>
         {confirm && (
           <ConfirmDialog message={confirm.message} onConfirm={confirm.onConfirm} onCancel={() => setConfirm(null)} />
@@ -958,8 +950,18 @@ function HotkeysPage({ onBack, onClose, onHotkeysChange }) {
 
   return (
     <div className="settings-overlay" onClick={onClose}>
-      <div className="settings-popup settings-popup-wide" onClick={e => e.stopPropagation()}>
+      <div className="settings-popup settings-popup-hotkeys" onClick={e => e.stopPropagation()}>
+        <button className="settings-back-arrow" onClick={onBack} title="Back to Settings" aria-label="Back">&larr;</button>
+        <button className="settings-x" onClick={onClose} title="Close" aria-label="Close">&times;</button>
+        <button
+          className="settings-btn"
+          onClick={handleReset}
+          style={{ position: 'absolute', top: 10, right: 48, padding: '5px 10px', fontSize: 12 }}
+        >
+          Reset to Defaults
+        </button>
         <h2 className="settings-title">Keyboard Shortcuts</h2>
+        <p className="settings-desc" style={{ marginTop: -6 }}>Click a key to rebind it. Hover a shortcut for details.</p>
 
         {conflicts.length > 0 && (
           <div className="hotkey-conflicts">
@@ -978,11 +980,8 @@ function HotkeysPage({ onBack, onClose, onHotkeysChange }) {
             const isRecording = recording === id;
             const hasConflict = conflicts.some(c => c.id1 === id || c.id2 === id);
             return (
-              <div key={id} className={`hotkey-row ${hasConflict ? 'conflict' : ''}`}>
-                <div className="hotkey-info">
-                  <span className="hotkey-label">{hk.label}</span>
-                  <span className="hotkey-desc">{hk.description}</span>
-                </div>
+              <div key={id} className={`hotkey-row ${hasConflict ? 'conflict' : ''}`} title={hk.description}>
+                <span className="hotkey-label">{hk.label}</span>
                 <button
                   className={`hotkey-key ${isRecording ? 'recording' : ''}`}
                   onClick={() => handleRecord(id)}
@@ -995,48 +994,22 @@ function HotkeysPage({ onBack, onClose, onHotkeysChange }) {
         </div>
 
         {/* Non-editable shortcuts */}
-        <div className="settings-section" style={{ marginTop: 12 }}>
-          <h3>Fixed Shortcuts</h3>
-          <div className="hotkey-row">
-            <div className="hotkey-info">
-              <span className="hotkey-label">Undo</span>
-            </div>
-            <span className="hotkey-key fixed">Ctrl + Z</span>
-          </div>
-          <div className="hotkey-row">
-            <div className="hotkey-info">
-              <span className="hotkey-label">Redo</span>
-            </div>
-            <span className="hotkey-key fixed">Ctrl + Y / Ctrl + Shift + Z</span>
-          </div>
-          <div className="hotkey-row">
-            <div className="hotkey-info">
-              <span className="hotkey-label">Copy</span>
-            </div>
-            <span className="hotkey-key fixed">Ctrl + C</span>
-          </div>
-          <div className="hotkey-row">
-            <div className="hotkey-info">
-              <span className="hotkey-label">Paste</span>
-            </div>
-            <span className="hotkey-key fixed">Ctrl + V</span>
-          </div>
-          {REFERENCE_ACTIONS && REFERENCE_ACTIONS.map((a, i) => (
-            <div key={`ref-${i}`} className="hotkey-row">
-              <div className="hotkey-info">
-                <span className="hotkey-label">{a.label}</span>
-                <span className="hotkey-desc">{a.description}</span>
-              </div>
+        <div className="settings-group">Fixed Shortcuts</div>
+        <div className="hotkeys-list">
+          {[
+            { label: 'Undo', display: 'Ctrl + Z' },
+            { label: 'Redo', display: 'Ctrl + Y / Ctrl + Shift + Z' },
+            { label: 'Copy', display: 'Ctrl + C' },
+            { label: 'Paste', display: 'Ctrl + V' },
+            ...(REFERENCE_ACTIONS || []),
+          ].map((a, i) => (
+            <div key={`ref-${i}`} className="hotkey-row" title={a.description}>
+              <span className="hotkey-label">{a.label}</span>
               <span className="hotkey-key fixed">{a.display}</span>
             </div>
           ))}
         </div>
 
-        <div className="settings-row-btns" style={{ marginTop: 12 }}>
-          <button className="settings-btn" onClick={handleReset}>Reset to Defaults</button>
-        </div>
-
-        <button className="settings-btn settings-back" onClick={onBack}>Back</button>
       </div>
     </div>
   );

@@ -1643,17 +1643,39 @@ input[type="number"] {
 }
 
 /* Hotkeys */
+/* Wide hotkeys page: shortcuts flow into columns, no inner scrolling.
+   Doubled class specificity so it wins over the base .settings-popup rule
+   that appears later in this file. */
+.settings-popup.settings-popup-hotkeys {
+  max-width: 1000px;
+  width: min(1000px, 96vw);
+}
+
 .hotkeys-list {
-  max-height: 350px;
-  overflow-y: auto;
+  column-count: 3;
+  column-gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .hotkeys-list {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 620px) {
+  .hotkeys-list {
+    column-count: 1;
+  }
 }
 
 .hotkey-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 0;
+  gap: 8px;
+  padding: 3px 0;
   border-bottom: 1px solid #222;
+  break-inside: avoid;
 }
 
 .hotkey-row.conflict {
@@ -1796,14 +1818,96 @@ input[type="number"] {
   background: #1a1a1a;
   border: 1px solid #444;
   border-radius: 10px;
-  padding: 24px;
+  padding: 20px;
   min-width: 320px;
   max-width: 420px;
-  max-height: 80vh;
+  max-height: 88vh;
   overflow-y: auto;
   color: #fff;
   user-select: text;
   -webkit-user-select: text;
+  position: relative;
+}
+
+/* Standard top-right close button */
+.settings-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #999;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.settings-x:hover {
+  background: #333;
+  color: #fff;
+}
+
+/* Top-left back arrow on settings sub-pages */
+.settings-back-arrow {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #999;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.settings-back-arrow:hover {
+  background: #333;
+  color: #fff;
+}
+
+/* Small labelled sub-group inside a section */
+.settings-sublabel {
+  display: block;
+  margin: 8px 0 5px;
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.settings-sublabel:first-of-type {
+  margin-top: 0;
+}
+
+/* Inline checkbox group inside a section */
+.settings-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-bottom: 4px;
+}
+
+.settings-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #ccc;
+  cursor: pointer;
 }
 
 .settings-popup-wide {
@@ -1838,16 +1942,17 @@ input[type="number"] {
 }
 
 .settings-title {
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   font-size: 18px;
   font-weight: bold;
   border-bottom: 1px solid #333;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
+  padding-right: 32px;
 }
 
 .settings-section {
-  margin-bottom: 12px;
-  padding: 12px 14px;
+  margin-bottom: 10px;
+  padding: 10px 12px;
   background: #202020;
   border: 1px solid #2d2d2d;
   border-radius: 8px;
@@ -1862,7 +1967,7 @@ input[type="number"] {
 
 /* Category label above a run of related sections */
 .settings-group {
-  margin: 20px 0 8px;
+  margin: 14px 0 6px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.2px;
