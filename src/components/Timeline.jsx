@@ -1513,25 +1513,27 @@ export default function Timeline({
             />
           ))}
 
-          {/* Hovered-key band spanning exactly the hovered key's extent, so
-              keyboard and grid highlights line up edge to edge */}
+          {/* Hovered-key band: constant one-lane thickness for every key,
+              centered on the hovered key so it always reads the same */}
           {hoveredNote && (() => {
             const r = noteToPitchRow(hoveredNote.stringIndex, hoveredNote.fret);
             const key = pianoKeys.find(k => k.pitchRow === r);
-            return key ? (
+            if (!key) return null;
+            const top = Math.max(0, Math.min(gridTotalHeight - rowHeight, key.top + key.height / 2 - rowHeight / 2));
+            return (
               <div
                 style={{
                   position: 'absolute',
                   left: 0,
                   right: 0,
-                  top: key.top,
-                  height: key.height,
+                  top,
+                  height: rowHeight,
                   background: 'rgba(100, 160, 255, 0.12)',
                   zIndex: 1,
                   pointerEvents: 'none',
                 }}
               />
-            ) : null;
+            );
           })()}
 
           {/* Octave separator lines on each C/B boundary, matching the
