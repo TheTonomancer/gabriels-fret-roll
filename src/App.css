@@ -1041,19 +1041,29 @@ input[type="number"] {
   margin-right: 35px;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
-.fretboard-note-box {
-  height: 30px;
-  border-bottom: 1px solid #333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Glassmorphism note/mode indicator floating over the nut area */
+.fretboard-note-glass {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  padding: 5px 14px;
+  border-radius: 8px;
+  background: rgba(22, 22, 22, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
   font-size: 14px;
   font-weight: bold;
   color: #fff;
-  background: #111;
   letter-spacing: 1px;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .fretboard-scroll {
@@ -1798,6 +1808,33 @@ input[type="number"] {
 
 .settings-popup-wide {
   min-width: 360px;
+}
+
+/* Main settings page: two columns so everything fits without scrolling */
+.settings-popup-main {
+  max-width: 720px;
+  width: min(720px, 92vw);
+}
+
+.settings-columns {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.settings-col {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .settings-columns {
+    flex-direction: column;
+  }
+
+  .settings-col {
+    width: 100%;
+  }
 }
 
 .settings-title {

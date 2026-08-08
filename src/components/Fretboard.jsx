@@ -479,12 +479,15 @@ export default function Fretboard({ onNoteClick, onAdjacentClick, onMoveNote, on
 
   return (
     <div className="fretboard-container">
-      <div className="fretboard-note-box">
-        {durationMode ? <span style={{ color: '#3498db' }}>Duration Mode ({hotkeys ? formatHotkey(hotkeys.durationMode) : 'L'})</span>
-          : moveMode ? <span style={{ color: '#e67e22' }}>Move Mode ({hotkeys ? formatHotkey(hotkeys.moveMode) : 'M'})</span>
-          : adjacentMode ? <span style={{ color: '#2ecc71' }}>Adjacent Mode ({hotkeys ? formatHotkey(hotkeys.adjacentMode) : 'A'})</span>
-          : noteName || '\u00A0'}
-      </div>
+      {/* Glass overlay over the nut area: current note or active edit mode */}
+      {(durationMode || moveMode || adjacentMode || noteName) && (
+        <div className="fretboard-note-glass">
+          {durationMode ? <span style={{ color: '#3498db' }}>Duration Mode ({hotkeys ? formatHotkey(hotkeys.durationMode) : 'L'})</span>
+            : moveMode ? <span style={{ color: '#e67e22' }}>Move Mode ({hotkeys ? formatHotkey(hotkeys.moveMode) : 'M'})</span>
+            : adjacentMode ? <span style={{ color: '#2ecc71' }}>Adjacent Mode ({hotkeys ? formatHotkey(hotkeys.adjacentMode) : 'A'})</span>
+            : noteName}
+        </div>
+      )}
       <div
         className="fretboard-scroll"
         ref={scrollRef}

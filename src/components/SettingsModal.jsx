@@ -283,8 +283,11 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
   if (page === 'main') {
     return (
       <div className="settings-overlay" onClick={onClose}>
-        <div className="settings-popup" onClick={e => e.stopPropagation()}>
+        <div className="settings-popup settings-popup-main" onClick={e => e.stopPropagation()}>
           <h2 className="settings-title">Settings</h2>
+
+          <div className="settings-columns">
+          <div className="settings-col">
 
           <div className="settings-group">Playback</div>
 
@@ -407,6 +410,9 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
             </div>
           </div>
 
+          </div>
+          <div className="settings-col">
+
           <div className="settings-group">Customization</div>
 
           <div className="settings-section">
@@ -483,6 +489,9 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
               </button>
               {copyMsg && <span className="settings-copy-msg">{copyMsg}</span>}
             </div>
+          </div>
+
+          </div>
           </div>
 
           <button className="settings-btn settings-close" onClick={onClose}>Close</button>

@@ -1480,8 +1480,8 @@ export default function Timeline({
             <div className="loop-boundary" style={{ left: loopLeftPx + loopWidthPx }} />
           </>}
 
-          {/* Subtle stripes on white-note lanes, mirroring the keyboard so
-              the key-to-lane correspondence is visible */}
+          {/* Key stripes mirroring the keyboard exactly: light where the
+              white key faces are, darker bands where the black keys sit */}
           {pianoKeys.filter(k => !k.isBlack).map(k => (
             <div
               key={`lane-${k.pitchRow}`}
@@ -1489,32 +1489,49 @@ export default function Timeline({
                 position: 'absolute',
                 left: 0,
                 right: 0,
-                top: pitchRowTopPx(k.pitchRow),
-                height: rowHeight,
+                top: k.top,
+                height: k.height,
                 background: 'rgba(255, 255, 255, 0.04)',
                 zIndex: 0,
                 pointerEvents: 'none',
               }}
             />
           ))}
+          {pianoKeys.filter(k => k.isBlack).map(k => (
+            <div
+              key={`blane-${k.pitchRow}`}
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: k.top,
+                height: k.height,
+                background: 'rgba(0, 0, 0, 0.35)',
+                zIndex: 0,
+                pointerEvents: 'none',
+              }}
+            />
+          ))}
 
-          {/* Hovered-note lane band, continuous with the keyboard's band */}
+          {/* Hovered-key band spanning exactly the hovered key's extent, so
+              keyboard and grid highlights line up edge to edge */}
           {hoveredNote && (() => {
             const r = noteToPitchRow(hoveredNote.stringIndex, hoveredNote.fret);
-            return r >= 0 && (
+            const key = pianoKeys.find(k => k.pitchRow === r);
+            return key ? (
               <div
                 style={{
                   position: 'absolute',
                   left: 0,
                   right: 0,
-                  top: pitchRowTopPx(r),
-                  height: rowHeight,
+                  top: key.top,
+                  height: key.height,
                   background: 'rgba(100, 160, 255, 0.12)',
                   zIndex: 1,
                   pointerEvents: 'none',
                 }}
               />
-            );
+            ) : null;
           })()}
 
           {/* Octave separator lines on each C/B boundary, matching the
