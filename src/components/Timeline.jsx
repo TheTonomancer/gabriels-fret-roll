@@ -1480,8 +1480,9 @@ export default function Timeline({
             <div className="loop-boundary" style={{ left: loopLeftPx + loopWidthPx }} />
           </>}
 
-          {/* Key stripes mirroring the keyboard exactly: light where the
-              white key faces are, darker bands where the black keys sit */}
+          {/* Uniform lane stripes: every lane is exactly one row tall, with
+              white-note lanes slightly lighter — the grid stays a strictly
+              even editing surface regardless of the keyboard's key shapes */}
           {pianoKeys.filter(k => !k.isBlack).map(k => (
             <div
               key={`lane-${k.pitchRow}`}
@@ -1489,46 +1490,27 @@ export default function Timeline({
                 position: 'absolute',
                 left: 0,
                 right: 0,
-                top: k.top,
-                height: k.height,
-                background: 'rgba(255, 255, 255, 0.04)',
-                zIndex: 0,
-                pointerEvents: 'none',
-              }}
-            />
-          ))}
-          {pianoKeys.filter(k => k.isBlack).map(k => (
-            <div
-              key={`blane-${k.pitchRow}`}
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                top: k.top,
-                height: k.height,
-                background: 'rgba(0, 0, 0, 0.35)',
+                top: pitchRowTopPx(k.pitchRow),
+                height: rowHeight,
+                background: 'rgba(255, 255, 255, 0.045)',
                 zIndex: 0,
                 pointerEvents: 'none',
               }}
             />
           ))}
 
-          {/* Hovered-key band: constant one-lane thickness for every key,
-              centered on the hovered key so it always reads the same */}
+          {/* Hovered-note band: always exactly the note's one-row lane */}
           {hoveredNote && (() => {
             const r = noteToPitchRow(hoveredNote.stringIndex, hoveredNote.fret);
-            const key = pianoKeys.find(k => k.pitchRow === r);
-            if (!key) return null;
-            const top = Math.max(0, Math.min(gridTotalHeight - rowHeight, key.top + key.height / 2 - rowHeight / 2));
-            return (
+            return r >= 0 && (
               <div
                 style={{
                   position: 'absolute',
                   left: 0,
                   right: 0,
-                  top,
+                  top: pitchRowTopPx(r),
                   height: rowHeight,
-                  background: 'rgba(100, 160, 255, 0.12)',
+                  background: 'rgba(100, 160, 255, 0.14)',
                   zIndex: 1,
                   pointerEvents: 'none',
                 }}
