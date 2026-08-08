@@ -5,7 +5,7 @@ import {
 } from '../utils/constants';
 import { getNoteName, playNote } from '../utils/audio';
 import {
-  TOTAL_PITCH_ROWS, PITCH_LIST, noteToPitchRow, pitchRowToMidi,
+  TOTAL_PITCH_ROWS, PITCH_LIST, noteToPitchRow, pitchRowToMidi, midiToPitchRow,
   midiToNoteName, getMidiNote, closestComboForPitch, pitchRowCombos, getComboForPosition
 } from '../utils/pitchMap';
 import { totalColumns, barStartBeats, beatToBar, beatLabel, isBarStart, remapNotes, beatToX, xToBeat, gridTotalWidth, colWidth, durationToWidth, timeToBeat } from '../utils/barLayout';
@@ -1135,15 +1135,39 @@ export default function Timeline({
   const loopLeftPx = beatToX(loopStart, barSubdivisions, cellWidth);
   const loopWidthPx = beatToX(loopEnd, barSubdivisions, cellWidth) - loopLeftPx;
 
-  // Build piano roll rows from unique pitches (top = highest, bottom = lowest)
-  const pianoRows = [];
-  for (let r = totalRows - 1; r >= 0; r--) {
-    const midi = pitchRowToMidi(r);
-    const name = midiToNoteName(midi);
-    const noteLetter = name.replace(/[0-9]/g, '');
-    const isBlack = BLACK_NOTES.has(noteLetter);
-    const isC = noteLetter === 'C';
-    pianoRows.push({ pitchRow: r, midi, name, isBlack, isC });
+  // Piano-look keys, all uniform: every white key is exactly 12/7 lanes
+  // (seven equal keys tiling each octave) and every black key is exactly its
+  // one-semitone lane (60% wide, overlapping the whites). Each key is its own
+  // hover/click element, so hover/chord-root highlighting fills exactly the
+  // key under the cursor; the grid echoes the note's lane with a subtle band.
+  const lowestMidi = pitchRowToMidi(0);
+  const highestMidi = pitchRowToMidi(totalRows - 1);
+  const whiteKeyHeight = (12 / 7) * rowHeight;
+  const WHITE_SEMITONES = [0, 2, 4, 5, 7, 9, 11]; // C D E F G A B
+  const BLACK_KEY_SEMITONES = [1, 3, 6, 8, 10];
+  const pianoKeys = [];
+  for (let cMidi = Math.floor(lowestMidi / 12) * 12; cMidi <= highestMidi; cMidi += 12) {
+    const cBottomY = (totalRows - (cMidi - lowestMidi)) * rowHeight;
+    WHITE_SEMITONES.forEach((s, k) => {
+      const midi = cMidi + s;
+      if (midi < lowestMidi || midi > highestMidi) return;
+      // Clamp faces partially cut off at the pane edges
+      const top = Math.max(0, cBottomY - (k + 1) * whiteKeyHeight);
+      const bottom = Math.min(gridTotalHeight, cBottomY - k * whiteKeyHeight);
+      if (bottom <= top) return;
+      pianoKeys.push({
+        midi, name: midiToNoteName(midi), pitchRow: midiToPitchRow(midi),
+        isBlack: false, top, height: bottom - top, isC: s === 0,
+      });
+    });
+    BLACK_KEY_SEMITONES.forEach((s) => {
+      const midi = cMidi + s;
+      if (midi < lowestMidi || midi > highestMidi) return;
+      pianoKeys.push({
+        midi, name: midiToNoteName(midi), pitchRow: midiToPitchRow(midi),
+        isBlack: true, top: cBottomY - (s + 1) * rowHeight, height: rowHeight, isC: false,
+      });
+    });
   }
 
   return (
@@ -1346,21 +1370,26 @@ export default function Timeline({
           onMouseLeave={() => setHoveredNote(null)}
         >
           <div className="piano-roll-inner" style={{ height: gridTotalHeight }}>
-            {pianoRows.map((row, i) => {
+            {pianoKeys.map((key) => {
               const isHovered = hoveredNote &&
-                noteToPitchRow(hoveredNote.stringIndex, hoveredNote.fret) === row.pitchRow;
+                noteToPitchRow(hoveredNote.stringIndex, hoveredNote.fret) === key.pitchRow;
               const isChordRoot = chordRoot &&
-                noteToPitchRow(chordRoot.stringIndex, chordRoot.fret) === row.pitchRow;
-              const combos = pitchRowCombos(row.pitchRow);
+                noteToPitchRow(chordRoot.stringIndex, chordRoot.fret) === key.pitchRow;
+              const combos = pitchRowCombos(key.pitchRow);
               // Pick the combo with lowest fret (first position playing)
               const repCombo = combos.reduce((best, c) => (!best || c.fret < best.fret) ? c : best, null);
               return (
                 <div
-                  key={i}
-                  className={`piano-key ${row.isBlack ? 'black' : 'white'} ${isHovered ? 'hovered' : ''} ${isChordRoot ? 'chord-root' : ''}`}
+                  key={key.midi}
+                  className={`piano-key ${key.isBlack ? 'black' : 'white'} ${isHovered ? 'hovered' : ''} ${isChordRoot ? 'chord-root' : ''}`}
                   style={{
-                    height: rowHeight,
-                    borderTop: row.isC ? '1px solid #555' : undefined,
+                    position: 'absolute',
+                    top: key.top,
+                    height: key.height,
+                    left: 0,
+                    right: key.isBlack ? undefined : 0,
+                    // Octave marker on the C/B boundary, aligned with the grid's
+                    borderBottomColor: key.isC ? '#555' : undefined,
                   }}
                   onMouseEnter={() => {
                     if (repCombo) {
@@ -1371,7 +1400,7 @@ export default function Timeline({
                   onClick={() => {
                     if (repCombo && setChordRoot) {
                       // Toggle: click same key to deselect
-                      if (chordRoot && noteToPitchRow(chordRoot.stringIndex, chordRoot.fret) === row.pitchRow) {
+                      if (chordRoot && noteToPitchRow(chordRoot.stringIndex, chordRoot.fret) === key.pitchRow) {
                         setChordRoot(null);
                       } else {
                         setChordRoot({ stringIndex: repCombo.stringIndex, fret: repCombo.fret });
@@ -1379,7 +1408,7 @@ export default function Timeline({
                     }
                   }}
                 >
-                  <span className="piano-key-label">{row.name}</span>
+                  <span className="piano-key-label">{key.name}</span>
                 </div>
               );
             })}
@@ -1445,15 +1474,53 @@ export default function Timeline({
             <div className="loop-boundary" style={{ left: loopLeftPx + loopWidthPx }} />
           </>}
 
-          {/* Octave separator lines at each C note */}
-          {pianoRows.filter(r => r.isC).map(r => (
+          {/* Subtle stripes on white-note lanes, mirroring the keyboard so
+              the key-to-lane correspondence is visible */}
+          {pianoKeys.filter(k => !k.isBlack).map(k => (
             <div
-              key={`oct-${r.pitchRow}`}
+              key={`lane-${k.pitchRow}`}
               style={{
                 position: 'absolute',
                 left: 0,
                 right: 0,
-                top: pitchRowTopPx(r.pitchRow),
+                top: pitchRowTopPx(k.pitchRow),
+                height: rowHeight,
+                background: 'rgba(255, 255, 255, 0.04)',
+                zIndex: 0,
+                pointerEvents: 'none',
+              }}
+            />
+          ))}
+
+          {/* Hovered-note lane band, continuous with the keyboard's band */}
+          {hoveredNote && (() => {
+            const r = noteToPitchRow(hoveredNote.stringIndex, hoveredNote.fret);
+            return r >= 0 && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: pitchRowTopPx(r),
+                  height: rowHeight,
+                  background: 'rgba(100, 160, 255, 0.12)',
+                  zIndex: 1,
+                  pointerEvents: 'none',
+                }}
+              />
+            );
+          })()}
+
+          {/* Octave separator lines on each C/B boundary, matching the
+              keyboard's octave marker */}
+          {pianoKeys.filter(k => k.isC).map(k => (
+            <div
+              key={`oct-${k.pitchRow}`}
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: pitchRowTopPx(k.pitchRow) + rowHeight,
                 height: '1px',
                 background: '#444',
                 zIndex: 1,

@@ -1579,13 +1579,14 @@ input[type="number"] {
   min-height: 0;
   overflow: hidden;
   position: relative;
-  border-bottom: 1px solid #1a1a1a;
 }
 
 .piano-key.white {
   background: #e8e8e8;
   justify-content: flex-end;
   padding-right: 4px;
+  /* Divider to the next key face; hidden behind black keys on the left */
+  border-bottom: 1px solid #1a1a1a;
 }
 
 .piano-key.black {
