@@ -1072,6 +1072,13 @@ input[type="number"] {
   overflow: hidden;
   cursor: pointer;
   touch-action: pan-y;
+  /* Dark rosewood: subtle vertical grain over a muted brown, kept dark so
+     note pills and highlights stay clearly visible on top */
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(0, 0, 0, 0.14) 0px, rgba(0, 0, 0, 0) 3px,
+      rgba(0, 0, 0, 0.07) 6px, rgba(0, 0, 0, 0) 10px),
+    linear-gradient(90deg, #201207, #33200f 25%, #2a190b 55%, #34200e 80%, #1d1006);
 }
 
 .fretboard-string {
@@ -1105,10 +1112,12 @@ input[type="number"] {
 
 .fret-dot {
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  background: #ccc;
+  /* Mother-of-pearl inlay look */
+  background: radial-gradient(circle at 35% 30%, #fbf6e8, #d9d0b8 55%, #a89e83);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
   transform: translate(-50%, -50%);
 }
 

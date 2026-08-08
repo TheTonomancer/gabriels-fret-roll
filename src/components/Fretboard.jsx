@@ -15,13 +15,29 @@ const BASE_FRET_HEIGHT = 40; // pixels per fret cell at zoom 1
 // Total cells = NUM_FRETS + 1 (fret 0 is open string, frets 1..NUM_FRETS are normal)
 const TOTAL_CELLS = NUM_FRETS + 1;
 
+// Real-guitar fret spacing: each fret cell is 2^(-1/12) the height of the
+// previous one, so frets tighten toward the body like a physical neck. The
+// open-string cell keeps the base height, and the fretted region keeps the
+// same total height as a linear layout (zoom and scrolling unchanged).
+const FRET_RATIO = Math.pow(2, -1 / 12);
+const fretCellTops = (fretHeight) => {
+  const firstFret = NUM_FRETS * fretHeight * (1 - FRET_RATIO) / (1 - Math.pow(FRET_RATIO, NUM_FRETS));
+  const tops = [0, fretHeight];
+  for (let n = 1; n <= NUM_FRETS; n++) {
+    tops.push(tops[n] + firstFret * Math.pow(FRET_RATIO, n - 1));
+  }
+  return tops;
+};
+
 
 
 export default function Fretboard({ onNoteClick, onAdjacentClick, onMoveNote, onDurationChange, onBeatChange, saveSnapshot, commitDrag, freeMode = false, totalBeats, activeNotes = [], backgroundActiveNotes = [], playingNotes = [], stringColors, getNoteColor, hoveredNote, setHoveredNote, hotkeys, hoverPreview = false, hoverVolume = 0.3, snapUnit = 1, fretboardZoom = 1, setFretboardZoom, voicingPreview, fingeringMode = false, onExitFingeringMode, onDeleteNote, notes = [], selectedBeat, selectedNotes, setSelectedNotes, autoScroll, hoverPill, timelineBodyRef, timelineZoom = 1, barSubdivisions = 4, position = 0, setPosition}) {
   const FRET_HEIGHT = BASE_FRET_HEIGHT * fretboardZoom;
   const GRID_HEIGHT = TOTAL_CELLS * FRET_HEIGHT;
-  const cellTopPx = (cell) => cell * FRET_HEIGHT;
-  const cellCenterPx = (cell) => (cell + 0.5) * FRET_HEIGHT;
+  const cellTops = fretCellTops(FRET_HEIGHT);
+  const cellTopPx = (cell) => cellTops[cell];
+  const cellHeightPx = (cell) => cellTops[cell + 1] - cellTops[cell];
+  const cellCenterPx = (cell) => (cellTops[cell] + cellTops[cell + 1]) / 2;
   const containerRef = useRef(null);
   const scrollRef = useRef(null);
   const [hover, setHover] = useState(null);
@@ -87,9 +103,13 @@ export default function Fretboard({ onNoteClick, onAdjacentClick, onMoveNote, on
     const stringSpacing = usableW / (NUM_STRINGS - 1);
 
     const stringIndex = Math.round((x - leftPx) / stringSpacing);
-    const fret = Math.floor(y / FRET_HEIGHT);
+    const tops = fretCellTops(FRET_HEIGHT);
+    let fret = -1;
+    for (let c = 0; c < TOTAL_CELLS; c++) {
+      if (y >= tops[c] && y < tops[c + 1]) { fret = c; break; }
+    }
 
-    if (stringIndex < 0 || stringIndex >= NUM_STRINGS || fret < 0 || fret >= TOTAL_CELLS) {
+    if (stringIndex < 0 || stringIndex >= NUM_STRINGS || fret < 0) {
       return null;
     }
 
@@ -401,7 +421,7 @@ export default function Fretboard({ onNoteClick, onAdjacentClick, onMoveNote, on
     if (!(autoScroll?.onHover ?? true)) return;
     if (!hoveredNote || !scrollRef.current || hover) return;
     const noteTop = cellTopPx(hoveredNote.fret);
-    const noteBottom = noteTop + FRET_HEIGHT;
+    const noteBottom = noteTop + cellHeightPx(hoveredNote.fret);
     const container = scrollRef.current;
     const viewTop = container.scrollTop;
     const viewBottom = viewTop + container.clientHeight;
@@ -423,7 +443,7 @@ export default function Fretboard({ onNoteClick, onAdjacentClick, onMoveNote, on
       if (n.fret > maxFret) maxFret = n.fret;
     }
     const regionTop = cellTopPx(minFret);
-    const regionBottom = cellTopPx(maxFret) + FRET_HEIGHT;
+    const regionBottom = cellTopPx(maxFret) + cellHeightPx(maxFret);
     const container = scrollRef.current;
     const viewTop = container.scrollTop;
     const viewBottom = viewTop + container.clientHeight;
@@ -504,27 +524,30 @@ export default function Fretboard({ onNoteClick, onAdjacentClick, onMoveNote, on
           borderBottom: 'none',
         }} />
 
-        {/* Nut - horizontal line between fret 0 and fret 1 */}
+        {/* Nut - bone-colored bar between the open area and fret 1 */}
         <div style={{
           position: 'absolute',
           left: `${PADDING_LEFT - 2}%`,
           right: `${PADDING_RIGHT - 2}%`,
-          top: cellTopPx(1) - 2,
-          height: 5,
-          background: '#d4c9a8',
+          top: cellTopPx(1) - 3,
+          height: 8,
+          background: 'linear-gradient(180deg, #f7f0dc, #d8cca6 55%, #b9ac85)',
           borderRadius: 2,
+          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
           zIndex: 2,
         }} />
 
-        {/* Fret wires */}
+        {/* Fret wires - metallic */}
         {Array.from({ length: NUM_FRETS - 1 }, (_, i) => (
           <div key={`fret-${i}`} style={{
             position: 'absolute',
             left: `${PADDING_LEFT - 1}%`,
             right: `${PADDING_RIGHT - 1}%`,
-            top: cellTopPx(i + 2),
-            height: 1,
-            background: '#555',
+            top: cellTopPx(i + 2) - 1,
+            height: 3,
+            background: 'linear-gradient(180deg, #8f8f8f, #e6e6e6 45%, #6d6d6d)',
+            borderRadius: 1.5,
+            boxShadow: '0 1px 1px rgba(0, 0, 0, 0.45)',
           }} />
         ))}
 
@@ -542,11 +565,16 @@ export default function Fretboard({ onNoteClick, onAdjacentClick, onMoveNote, on
           );
         })}
 
-        {/* Strings - vertical lines (thicker in open area) */}
+        {/* Strings - gauge tapers from low E to high E; the three low strings
+            are bronze-wound, the three high strings plain steel */}
         {Array.from({ length: NUM_STRINGS }, (_, i) => {
           const leftPercent = PADDING_LEFT + (i / (NUM_STRINGS - 1)) * (100 - PADDING_LEFT - PADDING_RIGHT);
           const thickness = NUM_STRINGS - i;
           const nutTop = cellTopPx(1);
+          const isWound = i < 3;
+          const stringMetal = isWound
+            ? 'linear-gradient(90deg, #6e5228, #c8a35e 50%, #5f4622)'
+            : 'linear-gradient(90deg, #8f8f8f, #ececec 50%, #7f7f7f)';
           return (
             <div key={`string-${i}`}>
               {/* Open area string (thicker) */}
@@ -556,7 +584,7 @@ export default function Fretboard({ onNoteClick, onAdjacentClick, onMoveNote, on
                 top: 0,
                 height: nutTop,
                 width: Math.max(3, thickness * 1.2),
-                background: '#ccc',
+                background: stringMetal,
                 transform: 'translateX(-50%)',
                 zIndex: 1,
               }} />
@@ -566,8 +594,9 @@ export default function Fretboard({ onNoteClick, onAdjacentClick, onMoveNote, on
                 left: `${leftPercent}%`,
                 top: nutTop,
                 bottom: 0,
-                width: Math.max(1, thickness * 0.5),
-                background: '#ddd',
+                width: Math.max(1, thickness * 0.7),
+                background: stringMetal,
+                boxShadow: '1px 0 1px rgba(0, 0, 0, 0.5)',
                 transform: 'translateX(-50%)',
                 zIndex: 1,
               }} />
