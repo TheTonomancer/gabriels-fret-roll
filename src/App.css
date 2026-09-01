@@ -1948,6 +1948,7 @@ input[type="number"] {
   border-bottom: 1px solid #333;
   padding-bottom: 8px;
   padding-right: 32px;
+  padding-left: 40px;
 }
 
 .settings-section {
