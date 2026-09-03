@@ -580,7 +580,7 @@ export default function SettingsModal({ appState, onApplyState, onClose, onHotke
           <div className="settings-popup" onClick={e => e.stopPropagation()}>
             <button className="settings-back-arrow" onClick={() => setPage('main')} title="Back to Settings" aria-label="Back">&larr;</button>
             <button className="settings-x" onClick={onClose} title="Close" aria-label="Close">&times;</button>
-            <h2 className="settings-title">Color Schemes</h2>
+            <h2 className="settings-title settings-title--centered">Color Schemes</h2>
 
           <div className="settings-section">
             <h3>Session Schemes</h3>
@@ -960,7 +960,7 @@ function HotkeysPage({ onBack, onClose, onHotkeysChange }) {
         >
           Reset to Defaults
         </button>
-        <h2 className="settings-title">Keyboard Shortcuts</h2>
+        <h2 className="settings-title settings-title--centered">Keyboard Shortcuts</h2>
         <p className="settings-desc" style={{ marginTop: -6 }}>Click a key to rebind it. Hover a shortcut for details.</p>
 
         {conflicts.length > 0 && (
