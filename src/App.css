@@ -1948,6 +1948,9 @@ input[type="number"] {
   border-bottom: 1px solid #333;
   padding-bottom: 8px;
   padding-right: 32px;
+}
+
+.settings-title--centered {
   text-align: center;
 }
 
